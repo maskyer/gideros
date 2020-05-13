@@ -361,6 +361,7 @@ void GLCanvas::setupProperties() {
 	setFps(60);
 	setScale(1);
 	setDrawInfos(false);
+    infosDrew_ = false;
 
 	float canvasColor[3] = { 1, 1, 1 };
 	setCanvasColor(canvasColor);
@@ -464,7 +465,10 @@ void GLCanvas::paintGL() {
 		drawInfoResolution(width_, height_, scale, lWidth, lHeight,
 				running_ && drawInfos_, canvasColor_, infoColor_, (int) application_->hardwareOrientation(), (int) application_->orientation(),
 				1.0/application_->meanFrameTime_,1-(application_->meanFreeTime_/application_->meanFrameTime_));
-	}
+        infosDrew_ = true;
+    }else{
+        infosDrew_ = false;
+    }
 }
 
 // TODO: TimerEvent.TIMER'da bi exception olursa, o event bir daha cagirilmiyor. Bunun nedeini bulmak lazim
@@ -700,7 +704,10 @@ void GLCanvas::timerEvent(QTimerEvent *){
     }
 
     ScreenManager::manager->tick();
-    update();
+
+    if (running_ || !infosDrew_){
+        update();
+    }
 }
 
 void GLCanvas::play(QDir directory){
@@ -1402,6 +1409,7 @@ void GLCanvas::onTimer() {
 	while (now > clock_ + deltat) {
 		update = true;
 		clock_ += deltat;
+        if (now - clock_ > 60) clock_ = now; //avoiding high CPU problems after hibernation
 	}
 
 	if (update)
