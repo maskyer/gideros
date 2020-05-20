@@ -67,6 +67,7 @@ private:
     float scale_;
     float deviceScale_;
     bool drawInfos_;
+    bool infosDrew_;
     float canvasColor_[3];
     float infoColor_[3];
     bool exportedApp_;
